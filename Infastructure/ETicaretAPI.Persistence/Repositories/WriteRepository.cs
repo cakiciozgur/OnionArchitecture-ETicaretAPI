@@ -57,7 +57,7 @@ namespace ETicaretAPI.Persistence.Repositories
             return entityEntry.State == EntityState.Modified;
         }
 
-        public async Task<int> SaveAsync(T datas)
+        public async Task<int> SaveAsync()
         {
             return await _context.SaveChangesAsync();
         }
