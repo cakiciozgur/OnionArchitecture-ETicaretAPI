@@ -22,19 +22,52 @@ namespace ETicaretAPI.Persistence.Repositories
 
         public DbSet<T> Table => _context.Set<T>();
 
-        public IQueryable<T> GetAll()
-        => Table;
+        public IQueryable<T> GetAll(bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if(!tracking)
+                query = query.AsNoTracking();
 
-        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression)
-        => Table.Where(expression);
+            return query;
+        }
 
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression)
-        => await Table.FirstOrDefaultAsync(expression);
+        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression, bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if (!tracking)
+                query = query.AsNoTracking();
 
-        public async Task<T> GetByIdAsync(string id)
-        => await Table.FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+            return query.Where(expression);
+        }
+
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression, bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if (!tracking)
+                query = query.AsNoTracking();
+
+            return await query.FirstOrDefaultAsync(expression);
+        }
+
+        public async Task<T> GetByIdAsync(string id, bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if (!tracking)
+                query = query.AsNoTracking();
+
+            return await query.FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+        }
 
         //public async Task<T> GetByIdAsync(string id) // other choice
         //=> await Table.FindAsync(id);
+
+        //private IQueryable<T> GetQueryTracking(DbSet<T> table, bool tracking = true) // tracking mekanizmasına karar vermek için aşağıdaki şekilde optimize edilebilir
+        //{
+        //    var query = table.AsQueryable();
+        //    if (!tracking)
+        //        query = query.AsNoTracking();
+
+        //    return query;
+        //}
     }
 }
