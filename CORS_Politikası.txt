@@ -1,0 +1,29 @@
+
+CORS Politikası Nedir?
+
+CORS Politikasından bahsedebilmek için backend'i tüketen clientin bir browserda çalışıyor olması gerekir.
+
+
+https://www.xyz.com => için geçerli olan protocol/host/port farklı ise browser kendisi üzerinden yapılan isteği durdurur.
+
+https://www.xyz.com/order => izin verilir.
+
+http://www.xyz.com => izin verilmez => protokol farklı
+
+https://www.xyzt.com => izin verilmez => host farklı
+
+
+Browservarların bu davranışına Same-Origin Policy denir.
+
+
+Browserlar doğal olarak almış oldukları Same-Origin Policy önlemini aşabilmek için client uygulamasının istek gönderdiği siteye/origine/api ye öncelikle gidip bu siteden gelecek isteklere izni
+olup olmadığı soracak ardından isteği iptal edecek yada izin verecektir!
+
+Aynı durum backend içinde geçerlidir. Hangi client tüketecek?
+
+Same-Origin Policy zararlı sitelerin diğer sitelerden browser tabanlı veri okumasını engelleyerek buyuk bir güvenlik açığını kapatır!
+
+CORS => API'ler üzerinden browserların almış oldukları Same-Origin Policy önlemini hafifletme politikasıdır!
+
+
+https://www.gencayyildiz.com/blog/tag/cors-politikasi/

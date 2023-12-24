@@ -32,12 +32,10 @@ namespace ETicaretAPI.API.Controllers
         }
 
         [HttpGet]
-        public async Task Get()
+        public ActionResult Get()
         {
-            var p = await _orderReadRepository.GetByIdAsync("e8c33f3c-037c-4728-92d0-d32f275373a6");
-            p.Address = "Aydın";
-
-            await _orderWriteRepository.SaveAsync();
+            var p = _orderReadRepository.GetAll();
+             return Ok(p);
         }
     }
 }
