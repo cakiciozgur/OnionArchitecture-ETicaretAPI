@@ -53,7 +53,7 @@ namespace ETicaretAPI.Persistence.Repositories
 
         public bool Update(T datas)
         {
-            EntityEntry<T> entityEntry = Table.Update(datas);
+            EntityEntry<T> entityEntry = Table.Update(datas); // track eilmeyen dataları güncellemek için kullanılabilir.
             return entityEntry.State == EntityState.Modified;
         }
 
