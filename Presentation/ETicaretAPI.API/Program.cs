@@ -1,4 +1,5 @@
 using ETicaretAPI.Application.Validators.Products;
+using ETicaretAPI.Infastructure;
 using ETicaretAPI.Persistence;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPersistenceServices();
+builder.Services.AddPInfastructureServices();
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationServices();
 
