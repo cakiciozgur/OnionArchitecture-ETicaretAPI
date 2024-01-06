@@ -131,16 +131,16 @@ namespace ETicaretAPI.API.Controllers
             //}).ToList());
             //await _invoiceFileWriteRepository.SaveAsync();
 
-            var datas = await _storageService.UploadAsync(@"resource\files", Request.Form.Files);
+            //var datas = await _storageService.UploadAsync(@"resource\files", Request.Form.Files);
 
-            await _fileWriteRepository.AddRangeAsync(datas.Select(d => new ETicaretAPI.Domain.Entities.File()
-            {
-                FileName = d.fileName,
-                Path = d.pathOrContainerName,
-                Storage = _storageService.StorageName,
+            //await _fileWriteRepository.AddRangeAsync(datas.Select(d => new ETicaretAPI.Domain.Entities.File()
+            //{
+            //    FileName = d.fileName,
+            //    Path = d.pathOrContainerName,
+            //    Storage = _storageService.StorageName,
 
-            }).ToList());
-            await _fileWriteRepository.SaveAsync();
+            //}).ToList());
+            //await _fileWriteRepository.SaveAsync();
 
             //var d1 = _fileReadRepository.GetAll(false);
             //var d2 = _invoiceFileReadRepository.GetAll(false);

@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddPersistenceServices();
-builder.Services.AddPInfastructureServices();
-builder.Services.AddStorage(StorageType.Local); // => or builder.Services.AddStorage<LocalStorage>();
+builder.Services.AddInfastructureServices();
+builder.Services.AddStorage<LocalStorage>(); // => or builder.Services.AddStorage<AzureStorage>(); builder.Services.AddStorage(StorageType.Azure); // enum kullanmak yerine generic yapýlanma kullanma daha mantýklý
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationServices();
 

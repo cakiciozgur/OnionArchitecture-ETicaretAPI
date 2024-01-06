@@ -3,6 +3,7 @@ using ETicaretAPI.Application.Repositories;
 using ETicaretAPI.Infastructure.Enums;
 using ETicaretAPI.Infastructure.Services;
 using ETicaretAPI.Infastructure.Services.Storage;
+using ETicaretAPI.Infastructure.Services.Storage.Azure;
 using ETicaretAPI.Infastructure.Services.Storage.Local;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -15,7 +16,7 @@ namespace ETicaretAPI.Infastructure
 {
     public static class ServiceRegistration
     {
-        public static void AddPInfastructureServices(this IServiceCollection services)
+        public static void AddInfastructureServices(this IServiceCollection services)
         {
             services.AddScoped<IStorageService, StorageService>();
         }
@@ -25,23 +26,23 @@ namespace ETicaretAPI.Infastructure
             services.AddScoped<IStorage, T>();
         }
 
-        public static void AddStorage(this IServiceCollection services, StorageType storageType)
-        {
-            switch (storageType)
-            {
-                case StorageType.Local:
-                    services.AddScoped<IStorage, LocalStorage>();
-                    break;
-                case StorageType.Azure:
-                    //todo azure storage eklenecek
-                    break;
-                case StorageType.AWS:
-                    //aws storage eklenebilir.
-                    break;
-                default:
-                    services.AddScoped<IStorage, LocalStorage>();
-                    break;
-            }
-        }
+        //public static void AddStorage(this IServiceCollection services, StorageType storageType)
+        //{
+        //    switch (storageType)
+        //    {
+        //        case StorageType.Local:
+        //            services.AddScoped<IStorage, LocalStorage>();
+        //            break;
+        //        case StorageType.Azure:
+        //            services.AddScoped<IStorage, AzureStorage>();
+        //            break;
+        //        case StorageType.AWS:
+        //            //aws storage eklenebilir.
+        //            break;
+        //        default:
+        //            services.AddScoped<IStorage, LocalStorage>();
+        //            break;
+        //    }
+        //}
     }
 }
