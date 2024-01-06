@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ETicaretAPI.Infastructure.Services.Storage.Local
 {
-    public class LocalStorage : ILocalStorage
+    public class LocalStorage : Storage, ILocalStorage
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -14,7 +14,7 @@ namespace ETicaretAPI.Infastructure.Services.Storage.Local
         }
 
         public async Task DeleteAsync(string path, string fileName)
-            => File.Delete($"{path}\\{fileName}");
+            => File.Delete($@"{path}\\{fileName}");
 
         public List<string> GetFiles(string path)
         {
@@ -22,8 +22,11 @@ namespace ETicaretAPI.Infastructure.Services.Storage.Local
             return directory.GetFiles().Select(f => f.Name).ToList();
         }
 
-        public bool HasFile(string path, string fileName) 
-            => File.Exists($"{path}\\{fileName}");
+        public bool HasFile(string path, string fileName)
+        {
+            string fullPath = Path.Combine(path, fileName);
+            return File.Exists(fullPath);
+        }
 
         public async Task<List<(string fileName, string pathOrContainerName)>> UploadAsync(string path, IFormFileCollection files)
         {
@@ -35,8 +38,9 @@ namespace ETicaretAPI.Infastructure.Services.Storage.Local
 
             foreach (IFormFile file in files)
             {
-                await CopyFileAsync($"{uploadPath}\\{file.Name}", file);
-                datas.Add((file.Name, $"{path}\\{file.Name}"));
+                string newFileName = await FileRenameAsync(path, file.Name, HasFile);
+                await CopyFileAsync($"{uploadPath}\\{newFileName}", file);
+                datas.Add((newFileName, $"{path}\\{newFileName}"));
             }
 
             return datas;
