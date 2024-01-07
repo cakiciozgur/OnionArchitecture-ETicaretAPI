@@ -1,3 +1,4 @@
+using ETicaretAPI.Application;
 using ETicaretAPI.Application.Validators.Products;
 using ETicaretAPI.Infastructure;
 using ETicaretAPI.Infastructure.Enums;
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfastructureServices();
 builder.Services.AddStorage<LocalStorage>(); // => or builder.Services.AddStorage<AzureStorage>(); builder.Services.AddStorage(StorageType.Azure); // enum kullanmak yerine generic yapýlanma kullanma daha mantýklý
+builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationServices();
 
