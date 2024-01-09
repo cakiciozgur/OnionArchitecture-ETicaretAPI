@@ -8,6 +8,7 @@ using ETicaretAPI.Application.Validators.Products;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using ETicaretAPI.Infastructure.Filters;
+using ETicaretAPI.Domain.Entities.Identity;
 
 namespace ETicaretAPI.Persistence
 {
@@ -28,6 +29,14 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
             services.AddScoped<IInvoiceFileReadRepository, InvoiceFileReadRepository>();
             services.AddScoped<IInvoiceFileWriteRepository, InvoiceFileWriteRepository>();
+            services.AddIdentity<AppUser,AppRole>(options => {
+                options.Password.RequiredLength = 3;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
+            }).AddEntityFrameworkStores<ETicaretAPIDbContext>(); // identity mekanizmasını devreye alıp => ETicaretAPIDbContext üzerinde store işlemlerinin yapılmasını bildirdik
         }
 
         public static void  AddFluentValidationServices(this IServiceCollection services)
