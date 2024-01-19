@@ -10,5 +10,6 @@ namespace ETicaretAPI.Application.Abstractions.Services.Auth
     public interface IInternalAuth
     {
         Task<LoginUserResponse> LoginAsync(string userNameOrEmail, string password, int expirationTime);
+        Task<LoginUserResponse> RefreshTokenLoginAsync(string refreshToken);
     }
 }

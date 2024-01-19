@@ -1,13 +1,8 @@
-﻿using Azure.Core;
-using ETicaretAPI.Application.Abstractions.Services.User;
+﻿using ETicaretAPI.Application.Abstractions.Services.User;
 using ETicaretAPI.Application.DTOs.User;
-using ETicaretAPI.Application.Features.Commands.AppUser.CreateUser;
+using ETicaretAPI.Application.Exceptions;
+using ETicaretAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ETicaretAPI.Persistence.Services
 {
@@ -39,6 +34,26 @@ namespace ETicaretAPI.Persistence.Services
 
             response.Message = "Kullanıcı başarıyla oluşturulmuştur.";
             return response;
+        }
+
+        public async Task<bool> UpdateRefreshToken(string refreshToken, AppUser user, DateTime refreshTokenEndDate, int addOnAccessTokenDate)
+        {
+            if (user != null)
+            {
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenEndDate = refreshTokenEndDate.AddSeconds(addOnAccessTokenDate);
+
+                IdentityResult identityResult = await _userManager.UpdateAsync(user);
+
+                if (!identityResult.Succeeded)
+                    return false;
+            }
+            else
+            {
+                throw new NotFounUserException();
+            }
+
+            return true;
         }
     }
 }

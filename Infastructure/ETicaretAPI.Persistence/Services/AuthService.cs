@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Application.Abstractions.Services.Auth;
+using ETicaretAPI.Application.Abstractions.Services.User;
 using ETicaretAPI.Application.Abstractions.Token;
 using ETicaretAPI.Application.DTOs;
 using ETicaretAPI.Application.DTOs.Facebook;
@@ -7,6 +8,7 @@ using ETicaretAPI.Application.Exceptions;
 using ETicaretAPI.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
@@ -19,13 +21,15 @@ namespace ETicaretAPI.Persistence.Services
         readonly IConfiguration _configuration;
         readonly ITokenHandler _tokenHandler;
         readonly HttpClient _httpClient;
-        public AuthService(UserManager<AppUser> userManager, IConfiguration configuration, ITokenHandler tokenHandler, IHttpClientFactory httpClient, SignInManager<AppUser> signInManager)
+        readonly IUserService _userService;
+        public AuthService(UserManager<AppUser> userManager, IConfiguration configuration, ITokenHandler tokenHandler, IHttpClientFactory httpClient, SignInManager<AppUser> signInManager, IUserService userService)
         {
             _userManager = userManager;
             _configuration = configuration;
             _tokenHandler = tokenHandler;
             _httpClient = httpClient.CreateClient();
             _signInManager = signInManager;
+            _userService = userService;
         }
         private async Task<Token> CreateUserExternalLoginAsync(AppUser user, UserLoginInfo info, string name, string email, int expirationTime)
         {
@@ -54,6 +58,8 @@ namespace ETicaretAPI.Persistence.Services
                 await _userManager.AddLoginAsync(user, info); // dış kaynaktan geldiğini biliyoruz o yüzden AspNetUsersLogins tablosuna da dış kaynak bilgilerini ekliyoruz!
 
                 Token token = _tokenHandler.CreateAccessToken(expirationTime);
+
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 5);
 
                 return token;
             }
@@ -127,6 +133,9 @@ namespace ETicaretAPI.Persistence.Services
             if (result.Succeeded) // Authentication success
             {
                 Token token = _tokenHandler.CreateAccessToken(expirationTime);
+
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15);
+
                 return new LoginUserResponse
                 {
                     Success = true,
@@ -135,6 +144,25 @@ namespace ETicaretAPI.Persistence.Services
             }
 
             throw new AuthenticationErrorException();
+        }
+
+        public async Task<LoginUserResponse> RefreshTokenLoginAsync(string refreshToken)
+        {
+            AppUser? user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            if (user != null && user.RefreshTokenEndDate > DateTime.UtcNow)
+            {
+                Token token = _tokenHandler.CreateAccessToken(15);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15);
+
+                return new LoginUserResponse
+                {
+                    Success = true,
+                    Token = token
+                };
+            }
+            else
+                throw new NotFounUserException();
         }
     }
 }
