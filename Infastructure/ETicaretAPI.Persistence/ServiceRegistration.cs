@@ -9,6 +9,9 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using ETicaretAPI.Infastructure.Filters;
 using ETicaretAPI.Domain.Entities.Identity;
+using ETicaretAPI.Application.Abstractions.Services.User;
+using ETicaretAPI.Persistence.Services;
+using ETicaretAPI.Application.Abstractions.Services.Auth;
 
 namespace ETicaretAPI.Persistence
 {
@@ -29,6 +32,11 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
             services.AddScoped<IInvoiceFileReadRepository, InvoiceFileReadRepository>();
             services.AddScoped<IInvoiceFileWriteRepository, InvoiceFileWriteRepository>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IInternalAuth, AuthService>();
+            services.AddScoped<IExternalAuth, AuthService>();
+
             services.AddIdentity<AppUser,AppRole>(options => {
                 options.Password.RequiredLength = 3;
                 options.Password.RequireNonAlphanumeric = false;
