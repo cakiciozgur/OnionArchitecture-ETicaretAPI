@@ -57,7 +57,7 @@ namespace ETicaretAPI.Persistence.Services
             {
                 await _userManager.AddLoginAsync(user, info); // dış kaynaktan geldiğini biliyoruz o yüzden AspNetUsersLogins tablosuna da dış kaynak bilgilerini ekliyoruz!
 
-                Token token = _tokenHandler.CreateAccessToken(expirationTime);
+                Token token = _tokenHandler.CreateAccessToken(expirationTime, user);
 
                 await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 5);
 
@@ -132,7 +132,7 @@ namespace ETicaretAPI.Persistence.Services
 
             if (result.Succeeded) // Authentication success
             {
-                Token token = _tokenHandler.CreateAccessToken(expirationTime);
+                Token token = _tokenHandler.CreateAccessToken(expirationTime, user);
 
                 await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15);
 
@@ -152,7 +152,7 @@ namespace ETicaretAPI.Persistence.Services
 
             if (user != null && user.RefreshTokenEndDate > DateTime.UtcNow)
             {
-                Token token = _tokenHandler.CreateAccessToken(15);
+                Token token = _tokenHandler.CreateAccessToken(15, user);
                 await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15);
 
                 return new LoginUserResponse
