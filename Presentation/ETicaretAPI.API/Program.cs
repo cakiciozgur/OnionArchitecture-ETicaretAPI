@@ -1,4 +1,5 @@
 using ETicaretAPI.API.Configurations.ColumnWriters;
+using ETicaretAPI.API.Extensions;
 using ETicaretAPI.Application;
 using ETicaretAPI.Application.Validators.Products;
 using ETicaretAPI.Infastructure;
@@ -90,7 +91,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
-
+app.ConfigureExceptionHandler<Program>(app.Services.GetRequiredService<ILogger<Program>>()); // global exception handling
 app.UseSerilogRequestLogging(); // UseSerilogRequestLogging koyulan satýrdan önceki iþlemler loglanmaz dolayýsýyla koyduðumuz yer kritik öneme sahiptir.
 
 app.UseHttpLogging(); // tüm http isteklerini loglama için eklendi.
