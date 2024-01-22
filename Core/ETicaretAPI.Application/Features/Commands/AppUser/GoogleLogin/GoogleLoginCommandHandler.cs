@@ -32,7 +32,7 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.GoogleLogin
                 Email = request.Email,
                 PhotoUrl = request.PhotoUrl,
                 Provider = request.Provider
-            },15);
+            },900);
 
             return new GoogleLoginCommandResponse
             {

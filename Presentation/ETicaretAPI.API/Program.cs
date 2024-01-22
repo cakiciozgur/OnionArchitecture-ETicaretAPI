@@ -6,6 +6,7 @@ using ETicaretAPI.Infastructure;
 using ETicaretAPI.Infastructure.Enums;
 using ETicaretAPI.Infastructure.Services.Storage.Local;
 using ETicaretAPI.Persistence;
+using ETicaretAPI.SignalR;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,6 +27,7 @@ builder.Services.AddStorage<LocalStorage>(); // => or builder.Services.AddStorag
 builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationServices();
+builder.Services.AddSignalRServices();
 
 Logger logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -81,7 +83,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     }); 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddCors(options => options.AddDefaultPolicy(policy=> policy.WithOrigins("http://localhost:4200", "http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy=> policy.WithOrigins("http://localhost:4200", "http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -112,5 +114,5 @@ app.Use(async (context, next) =>
 });
 
 app.MapControllers();
-
+app.MapHubs();
 app.Run();
