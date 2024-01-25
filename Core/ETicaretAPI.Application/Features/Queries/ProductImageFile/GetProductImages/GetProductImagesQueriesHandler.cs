@@ -27,7 +27,8 @@ namespace ETicaretAPI.Application.Features.Queries.ProductImageFile.GetProductIm
             {
                 FileName = i.FileName,
                 Id = i.Id,
-                Path = $"{_configuration["BaseStorageUrl:Local"]}/{i.Path}"
+                Path = $"{_configuration["BaseStorageUrl:Local"]}/{i.Path}",
+                Showcase = i.Showcase
             }).ToList();
             return response;
         }
