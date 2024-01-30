@@ -21,6 +21,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor(); // clienttan gelen request ile oluþturulan httpcontext nesnesine katmanlardaki classlar üzerinden (business logic) eriþebilmemizi saðlayan bir servistir.
+
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfastructureServices();
 builder.Services.AddStorage<LocalStorage>(); // => or builder.Services.AddStorage<AzureStorage>(); builder.Services.AddStorage(StorageType.Azure); // enum kullanmak yerine generic yapýlanma kullanma daha mantýklý
