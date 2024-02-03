@@ -1,4 +1,4 @@
-﻿using ETicaretAPI.Application.ViewModels.Products;
+﻿using ETicaretAPI.Application.DTOs.Products;
 using FluentValidation;
 
 namespace ETicaretAPI.Application.Validators.Products

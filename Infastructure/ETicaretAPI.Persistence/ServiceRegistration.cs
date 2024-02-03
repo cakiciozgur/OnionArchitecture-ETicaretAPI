@@ -12,7 +12,8 @@ using ETicaretAPI.Domain.Entities.Identity;
 using ETicaretAPI.Application.Abstractions.Services.User;
 using ETicaretAPI.Persistence.Services;
 using ETicaretAPI.Application.Abstractions.Services.Auth;
-using ETicaretAPI.Application.Abstractions.Services.Basket;
+using ETicaretAPI.Application.Abstractions.Services;
+using ETicaretAPI.Application.Abstractions.Services.Order;
 
 namespace ETicaretAPI.Persistence
 {
@@ -44,6 +45,7 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IInternalAuth, AuthService>();
             services.AddScoped<IExternalAuth, AuthService>();
             services.AddScoped<IBasketService, BasketService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             services.AddIdentity<AppUser,AppRole>(options => {
                 options.Password.RequiredLength = 3;

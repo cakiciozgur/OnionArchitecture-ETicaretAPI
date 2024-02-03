@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETicaretAPI.Application.ViewModels.Products
+namespace ETicaretAPI.Application.DTOs.Products
 {
-    public class VMUpdateProduct
+    public class VMCreateProduct
     {
-        public string Id { get; set; }
         public string Name { get; set; }
         public int Stock { get; set; }
         public double Price { get; set; }

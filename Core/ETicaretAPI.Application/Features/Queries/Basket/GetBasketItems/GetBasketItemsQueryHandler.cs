@@ -1,4 +1,4 @@
-﻿using ETicaretAPI.Application.Abstractions.Services.Basket;
+﻿using ETicaretAPI.Application.Abstractions.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System;

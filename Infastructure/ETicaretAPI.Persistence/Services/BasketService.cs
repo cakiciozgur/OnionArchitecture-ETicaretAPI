@@ -1,6 +1,6 @@
-﻿using ETicaretAPI.Application.Abstractions.Services.Basket;
+﻿using ETicaretAPI.Application.Abstractions.Services;
+using ETicaretAPI.Application.DTOs.Basket;
 using ETicaretAPI.Application.Repositories;
-using ETicaretAPI.Application.ViewModels.Basket;
 using ETicaretAPI.Domain.Entities;
 using ETicaretAPI.Domain.Entities.Identity;
 using ETicaretAPI.Persistence.Repositories;
@@ -24,6 +24,7 @@ namespace ETicaretAPI.Persistence.Services
         readonly IBasketReadRepository _basketReadRepository;
         readonly IBasketItemWriteRepository _basketItemWriteRepository;
         readonly IBasketItemReadRepository _basketItemReadRepository;
+
         public BasketService(IHttpContextAccessor contextAccessor, UserManager<AppUser> userManager, IOrderReadRepository orderReadRepository, IBasketWriteRepository basketWriteRepository, IBasketItemWriteRepository basketItemWriteRepository, IBasketItemReadRepository basketItemReadRepository, IBasketReadRepository basketReadRepository)
         {
             _contextAccessor = contextAccessor;
@@ -132,6 +133,15 @@ namespace ETicaretAPI.Persistence.Services
                 await _basketItemWriteRepository.SaveAsync();
             }
             throw new NotImplementedException();
+        }
+
+        public Basket? GetUserActiveBasket
+        {
+            get
+            {
+                Basket? basket = ContextUser().Result;
+                return basket;
+            }
         }
     }
 }

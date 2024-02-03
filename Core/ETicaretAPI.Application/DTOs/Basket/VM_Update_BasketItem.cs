@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETicaretAPI.Application.ViewModels.Basket
+namespace ETicaretAPI.Application.DTOs.Basket
 {
     public class VM_Update_BasketItem
     {

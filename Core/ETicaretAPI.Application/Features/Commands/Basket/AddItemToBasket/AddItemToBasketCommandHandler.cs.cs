@@ -1,4 +1,4 @@
-﻿using ETicaretAPI.Application.Abstractions.Services.Basket;
+﻿using ETicaretAPI.Application.Abstractions.Services;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace ETicaretAPI.Application.Features.Commands.Basket.AddItemToBasket
 
         public async Task<AddItemToBasketCommandResponse> Handle(AddItemToBasketCommandRequest request, CancellationToken cancellationToken)
         {
-            await _basketService.AddItemToBasketAsync(new ViewModels.Basket.VM_Create_BasketItem
+            await _basketService.AddItemToBasketAsync(new DTOs.Basket.VM_Create_BasketItem
             {
                 ProductId = request.ProductId,
                 Quantity = request.Quantity

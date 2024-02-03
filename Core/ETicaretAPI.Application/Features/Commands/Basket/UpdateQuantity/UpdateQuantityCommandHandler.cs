@@ -1,4 +1,4 @@
-﻿using ETicaretAPI.Application.Abstractions.Services.Basket;
+﻿using ETicaretAPI.Application.Abstractions.Services;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace ETicaretAPI.Application.Features.Commands.Basket.UpdateQuantity
         }
         public async Task<UpdateQuantityCommandResponse> Handle(UpdateQuantityCommandRequest request, CancellationToken cancellationToken)
         {
-            await _basketService.UpdateQuantityAsync(new ViewModels.Basket.VM_Update_BasketItem
+            await _basketService.UpdateQuantityAsync(new DTOs.Basket.VM_Update_BasketItem
             {
                 BasketItemId = request.BasketItemId,
                 Quantity = request.Quantity,
