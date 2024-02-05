@@ -1,4 +1,6 @@
 ﻿using ETicaretAPI.Application.Features.Commands.Order.CreateOrder;
+using ETicaretAPI.Application.Features.Queries.Order.GetOrderById;
+using ETicaretAPI.Application.Features.Queries.Order.GetOrders;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,6 +23,20 @@ namespace ETicaretAPI.API.Controllers
         public async Task<IActionResult> CreateOrder(CreateOrderCommandRequest createOrderCommandRequest)
         {
             CreateOrderCommandResponse response = await _mediator.Send(createOrderCommandRequest);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetOrders([FromQuery] GetOrdersQueryRequest getOrdersQueryRequest)
+        {
+            GetOrdersQueryResponse response = await _mediator.Send(getOrdersQueryRequest);
+            return Ok(response);
+        }
+
+        [HttpGet("{Id}")]
+        public async Task<IActionResult> GetOrdersById([FromRoute] GetOrderByIdQueryRequest getOrderByIdQueryRequest)
+        {
+            GetOrderByIdQueryResponse response = await _mediator.Send(getOrderByIdQueryRequest);
             return Ok(response);
         }
     }
