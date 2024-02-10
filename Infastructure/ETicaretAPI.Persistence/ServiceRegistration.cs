@@ -14,6 +14,7 @@ using ETicaretAPI.Persistence.Services;
 using ETicaretAPI.Application.Abstractions.Services.Auth;
 using ETicaretAPI.Application.Abstractions.Services;
 using ETicaretAPI.Application.Abstractions.Services.Order;
+using Microsoft.AspNetCore.Identity;
 
 namespace ETicaretAPI.Persistence
 {
@@ -55,7 +56,8 @@ namespace ETicaretAPI.Persistence
                 options.Password.RequireUppercase = false;
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@";
                 options.User.RequireUniqueEmail = true;
-            }).AddEntityFrameworkStores<ETicaretAPIDbContext>(); // identity mekanizmasını devreye alıp => ETicaretAPIDbContext üzerinde store işlemlerinin yapılmasını bildirdik
+            }).AddEntityFrameworkStores<ETicaretAPIDbContext>() // identity mekanizmasını devreye alıp => ETicaretAPIDbContext üzerinde store işlemlerinin yapılmasını bildirdik
+            .AddDefaultTokenProviders(); // reset password token almak için gereken servis
         }
 
         public static void  AddFluentValidationServices(this IServiceCollection services)

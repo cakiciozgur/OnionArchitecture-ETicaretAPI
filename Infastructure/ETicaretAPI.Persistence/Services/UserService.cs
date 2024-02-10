@@ -1,15 +1,18 @@
 ﻿using ETicaretAPI.Application.Abstractions.Services.User;
 using ETicaretAPI.Application.DTOs.User;
 using ETicaretAPI.Application.Exceptions;
+using ETicaretAPI.Application.Helpers;
 using ETicaretAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace ETicaretAPI.Persistence.Services
 {
     public class UserService : IUserService
     {
-        readonly UserManager<Domain.Entities.Identity.AppUser> _userManager;
-        public UserService(UserManager<Domain.Entities.Identity.AppUser> userManager)
+        readonly UserManager<AppUser> _userManager;
+        public UserService(UserManager<AppUser> userManager)
         {
             _userManager = userManager;
         }
@@ -35,8 +38,7 @@ namespace ETicaretAPI.Persistence.Services
             response.Message = "Kullanıcı başarıyla oluşturulmuştur.";
             return response;
         }
-
-        public async Task<bool> UpdateRefreshToken(string refreshToken, AppUser user, DateTime refreshTokenEndDate, int addOnAccessTokenDate)
+        public async Task<bool> UpdateRefreshTokenAsync(string refreshToken, AppUser user, DateTime refreshTokenEndDate, int addOnAccessTokenDate)
         {
             if (user != null)
             {
@@ -54,6 +56,21 @@ namespace ETicaretAPI.Persistence.Services
             }
 
             return true;
+        }
+        public async Task UpdatePasswordAsync(string userId, string resetToken, string newPassword)
+        {
+            AppUser user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                resetToken = CustomEncoders.UrlDecode(resetToken);
+
+                IdentityResult result = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
+
+                if(result.Succeeded)
+                    await _userManager.UpdateSecurityStampAsync(user);
+                else
+                    throw new PasswordChangeFailedException();
+            }
         }
     }
 }

@@ -18,19 +18,19 @@ namespace ETicaretAPI.Infastructure.Services.Mail
         {
             _configuration = configuration;
         }
-        public async Task SendMessageAsync(string to, string subject, string body, bool isBodyHtml = true)
+        public async Task SendMailAsync(string to, string subject, string body, bool isBodyHtml = true)
         {
-            await SendMessageAsync(new[] { to }, subject, body, isBodyHtml);
+            await SendMailAsync(new[] { to }, subject, body, isBodyHtml);
         }
 
-        public async Task SendMessageAsync(string[] tos, string subject, string body, bool isBodyHtml = true)
+        public async Task SendMailAsync(string[] tos, string subject, string body, bool isBodyHtml = true)
         {
             MailMessage mail = new()
             {
                 IsBodyHtml = isBodyHtml,
                 Subject = subject,
                 Body = body,
-                From = new(_configuration["Mail:Username"], "E-Commerce Test", System.Text.Encoding.UTF8),
+                From = new(_configuration["Mail:Username"], "E-Commerce Test", Encoding.UTF8),
             };
 
             foreach (var item in tos)
@@ -47,6 +47,19 @@ namespace ETicaretAPI.Infastructure.Services.Mail
             };
 
             await smtpClient.SendMailAsync(mail);
+        }
+
+        public async Task SendPasswordResetMailAsync(string to, string userId, string resetToken)
+        {
+            StringBuilder resetMail = new StringBuilder();
+            resetMail.AppendLine("Merhaba<br>Eğer yeni şifre talebinde bulunduysanız aşağıdaki linkten şifrenizi yenileyebilirsiniz! <br><strong><a target=\"_blank\" href=\"");
+            resetMail.AppendLine(_configuration["AngularClientUrl"]);
+            resetMail.AppendLine("/update-password/");
+            resetMail.AppendLine(userId);
+            resetMail.AppendLine("/");
+            resetMail.AppendLine(resetToken);
+            resetMail.AppendLine("\"> Yeni şifre talebi için tıklayınız </a></strong><br><br><span style=\"font-size:12px;\"> NOT: Şifre yenileme talebinde bulunmadıysanız bu maili ciddiye almayınız! </span> <br>");
+            await SendMailAsync(to, "Şifre Yenileme Talebi", resetMail.ToString());
         }
     }
 }
