@@ -15,6 +15,7 @@ namespace ETicaretAPI.Application.DTOs.Order
         public string Description { get; set; }
         public List<SingleOrderBasketItem> BasketItems { get; set; }
         public DateTime CreatedDate { get; set; }
+        public bool Completed { get; set; }
     }
 
     public class SingleOrderBasketItem

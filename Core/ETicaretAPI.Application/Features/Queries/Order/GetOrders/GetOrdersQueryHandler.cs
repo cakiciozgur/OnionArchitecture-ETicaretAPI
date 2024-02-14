@@ -31,7 +31,8 @@ namespace ETicaretAPI.Application.Features.Queries.Order.GetOrders
                 CreatedDate = o.CreatedDate,
                 OrderCode = o.OrderCode,
                 TotalPrice = o.TotalPrice,
-                Username = o.Username
+                Username = o.Username,
+                Completed = o.Completed
             }).ToList();
 
             return new GetOrdersQueryResponse

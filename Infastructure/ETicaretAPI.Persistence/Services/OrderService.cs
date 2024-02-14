@@ -2,7 +2,9 @@
 using ETicaretAPI.Application.Abstractions.Services.Order;
 using ETicaretAPI.Application.DTOs.Order;
 using ETicaretAPI.Application.Repositories;
+using ETicaretAPI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +17,14 @@ namespace ETicaretAPI.Persistence.Services
     {
         readonly IOrderWriteRepository _orderWriteRepository;
         readonly IOrderReadRepository _orderReadRepository;
-        public OrderService(IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository)
+        readonly ICompletedOrderWriteRepository _completedOrderWriteRepository;
+        readonly ICompletedOrderReadRepository _completedOrderReadRepository;
+        public OrderService(IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository, ICompletedOrderWriteRepository completedOrderWriteRepository, ICompletedOrderReadRepository completedOrderReadRepository)
         {
             _orderWriteRepository = orderWriteRepository;
             _orderReadRepository = orderReadRepository;
+            _completedOrderWriteRepository = completedOrderWriteRepository;
+            _completedOrderReadRepository = completedOrderReadRepository;
         }
 
         public async Task CreateOrder(CreateOrder createOrder)
@@ -39,48 +45,99 @@ namespace ETicaretAPI.Persistence.Services
         public async Task<ListOrderResponse> GetOrdersAsync(int page, int size)
         {
             var totalCount = _orderReadRepository.GetAll(false).Count();
-            List<ListOrder> orders = await _orderReadRepository.Table.Skip(page * size).Take(size).Include(o => o.Basket)
+
+            var query =  _orderReadRepository.Table.Skip(page * size).Take(size).Include(o => o.Basket)
             .ThenInclude(b => b.User)
-            .ThenInclude(b=> b.Baskets)
-            .ThenInclude(b => b.BasketItems)
-            .ThenInclude(b => b.Product)
-            .Select(x=> new ListOrder
-            {
-                    Id = x.Id.ToString(),
-                    CreatedDate = x.CreatedDate,
-                    OrderCode = x.OrderCode,
-                    TotalPrice =  x.Basket.BasketItems.Sum(bi=> bi.Product.Price * bi.Quantity),
-                    Username  = x.Basket.User.UserName
-            }).ToListAsync();
+                .ThenInclude(b => b.Baskets)
+                    .ThenInclude(b => b.BasketItems)
+                        .ThenInclude(b => b.Product);
+
+            var data = from order in query
+                       join completedOrder in _completedOrderReadRepository.Table
+                       on order.Id equals completedOrder.OrderId into co
+                       from _co in co.DefaultIfEmpty()
+                       select new ListOrder
+                       {
+                           Id = order.Id.ToString(),
+                           CreatedDate = order.CreatedDate,
+                           OrderCode = order.OrderCode,
+                           TotalPrice = order.Basket.BasketItems.Sum(bi => bi.Product.Price * bi.Quantity),
+                           Username = order.Basket.User.UserName,
+                           Completed = _co != null ? true : false
+                       };
 
             return new ListOrderResponse
             {
-                Orders = orders,
+                Orders = await data.Select(x => new ListOrder
+                {
+                    Id = x.Id,
+                    CreatedDate = x.CreatedDate,
+                    OrderCode = x.OrderCode,
+                    TotalPrice = x.TotalPrice,
+                    Username = x.Username,
+                    Completed = x.Completed
+                }).ToListAsync(),
                 TotalCount = totalCount
             };
         }
         public async Task<SingleOrder> GetOrderByIdAsync(string id)
         {
-            var data = await _orderReadRepository.Table
+            var query = _orderReadRepository.Table
                 .Include(o => o.Basket)
                     .ThenInclude(b => b.BasketItems)
-                        .ThenInclude(bi => bi.Product)
-                            .FirstOrDefaultAsync(o => o.Id == Guid.Parse(id));
+                        .ThenInclude(bi => bi.Product);
+
+            var data = await (from order in query
+                       join completedOrder in _completedOrderReadRepository.Table
+                       on order.Id equals completedOrder.OrderId into co
+                       from _co in co.DefaultIfEmpty()
+                       select new SingleOrder
+                       {
+                           Id = order.Id.ToString(),
+                           CreatedDate = order.CreatedDate,
+                           OrderCode = order.OrderCode,
+                           Address = order.Address,
+                           Description = order.Description,
+                           BasketItems = order.Basket.BasketItems.Select(bi => new SingleOrderBasketItem
+                           {
+                               Name = bi.Product.Name,
+                               Price = bi.Product.Price,
+                               Quantity = bi.Quantity
+                           }).ToList(),
+                           Completed = _co != null ? true : false
+                       }).FirstOrDefaultAsync(o => o.Id == id);
 
             return new SingleOrder
             {
-                Id = data.Id.ToString(),
+                Id = data.Id,
                 CreatedDate = data.CreatedDate,
                 OrderCode = data.OrderCode,
                 Address = data.Address,
                 Description = data.Description,
-                BasketItems = data.Basket.BasketItems.Select(bi => new SingleOrderBasketItem
-                {
-                    Name = bi.Product.Name,
-                    Price = bi.Product.Price,
-                    Quantity = bi.Quantity
-                }).ToList()
+                BasketItems = data.BasketItems.ToList(),
+                Completed = data.Completed
             };
+        }
+
+        public async Task<bool> CompleteOrderAsync(string id)
+        {
+            Order order = await _orderReadRepository.GetByIdAsync(id);
+            if(order != null)
+            {
+                await _completedOrderWriteRepository.AddAsync(new CompletedOrder
+                {
+                    OrderId = Guid.Parse(id)
+                });
+
+                int ss = await _completedOrderWriteRepository.SaveAsync();
+
+                if(ss > 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

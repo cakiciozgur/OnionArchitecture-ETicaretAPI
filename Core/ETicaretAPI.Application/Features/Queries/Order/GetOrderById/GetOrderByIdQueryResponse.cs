@@ -8,5 +8,6 @@
         public string Description { get; set; }
         public List<DTOs.Order.SingleOrderBasketItem> BasketItems { get; set; }
         public DateTime CreatedDate { get; set; }
+        public bool Completed { get; set; }
     }
 }

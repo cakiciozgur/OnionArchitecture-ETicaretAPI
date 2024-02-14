@@ -24,12 +24,13 @@ namespace ETicaretAPI.Application.Features.Queries.Order.GetOrderById
 
             return new GetOrderByIdQueryResponse
             {
-                Id = response.Id.ToString(),
+                Id = response.Id,
                 CreatedDate = response.CreatedDate,
                 OrderCode = response.OrderCode,
                 Address = response.Address,
                 Description = response.Description,
-                BasketItems = response.BasketItems
+                BasketItems = response.BasketItems,
+                Completed = response.Completed
             };
         }
     }

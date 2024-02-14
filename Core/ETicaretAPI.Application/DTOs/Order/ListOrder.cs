@@ -13,6 +13,7 @@ namespace ETicaretAPI.Application.DTOs.Order
         public string Username { get; set; }
         public double TotalPrice { get; set; }
         public DateTime CreatedDate { get; set; }
+        public bool Completed { get; set; }
     }
 
     public class ListOrderResponse
