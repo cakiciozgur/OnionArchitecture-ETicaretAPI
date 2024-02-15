@@ -119,10 +119,14 @@ namespace ETicaretAPI.Persistence.Services
             };
         }
 
-        public async Task<bool> CompleteOrderAsync(string id)
+        public async Task<(bool, CompletedOrderDTO)> CompleteOrderAsync(string id)
         {
-            Order order = await _orderReadRepository.GetByIdAsync(id);
-            if(order != null)
+            Order? order = await _orderReadRepository.Table
+                .Include(o=> o.Basket)
+                .ThenInclude(b=> b.User)
+                .FirstOrDefaultAsync(o => o.Id == Guid.Parse(id));
+
+            if (order != null)
             {
                 await _completedOrderWriteRepository.AddAsync(new CompletedOrder
                 {
@@ -131,13 +135,22 @@ namespace ETicaretAPI.Persistence.Services
 
                 int ss = await _completedOrderWriteRepository.SaveAsync();
 
-                if(ss > 0)
+                if (ss > 0)
                 {
-                    return true;
+                    CompletedOrderDTO completedOrder = new CompletedOrderDTO
+                    {
+                        OrderCode = order.OrderCode,
+                        OrderDate = order.CreatedDate,
+                        Username = order.Basket.User.UserName,
+                        Usersurname = order.Basket.User.NameSurname,
+                        Email = order.Basket.User.Email
+                    };
+                    return (true, completedOrder);
                 }
             }
 
-            return false;
+            return (false, new CompletedOrderDTO());
+
         }
     }
 }
