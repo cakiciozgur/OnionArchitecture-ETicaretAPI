@@ -142,7 +142,7 @@ namespace ETicaretAPI.Persistence.Services
                         OrderCode = order.OrderCode,
                         OrderDate = order.CreatedDate,
                         Username = order.Basket.User.UserName,
-                        Usersurname = order.Basket.User.NameSurname,
+                        UserNameSurname = order.Basket.User.NameSurname,
                         Email = order.Basket.User.Email
                     };
                     return (true, completedOrder);
