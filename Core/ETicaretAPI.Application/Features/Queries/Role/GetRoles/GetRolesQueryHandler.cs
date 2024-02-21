@@ -18,11 +18,12 @@ namespace ETicaretAPI.Application.Features.Queries.Role.GetRoles
         }
         public async Task<GetRolesQueryResponse> Handle(GetRolesQueryRequest request, CancellationToken cancellationToken)
         {
-            var response = _roleService.GetAllRoles();
+            var response = _roleService.GetAllRoles(request.Page, request.Size);
 
             return new GetRolesQueryResponse
             {
-                Roles = response
+                Roles = response.Item1,
+                TotalRoleCount = response.Item2
             };
         }
     }

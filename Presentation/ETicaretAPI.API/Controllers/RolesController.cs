@@ -27,7 +27,7 @@ namespace ETicaretAPI.API.Controllers
         }
         [HttpGet]
         [AuthorizeDefinition(Menu = AuthorizeDefinitonConstant.Roles, ActionType = Application.Enums.ActionType.Reading, Definition = "Get Roles")]
-        public async Task<IActionResult> GetRoles(GetRolesQueryRequest getRolesQueryRequest)
+        public async Task<IActionResult> GetRoles([FromQuery] GetRolesQueryRequest getRolesQueryRequest)
         {
             GetRolesQueryResponse response = await _mediator.Send(getRolesQueryRequest);
             return Ok(response);
@@ -60,7 +60,7 @@ namespace ETicaretAPI.API.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("{name}")]
+        [HttpDelete("{Id}")]
         [AuthorizeDefinition(Menu = AuthorizeDefinitonConstant.Roles, ActionType = Application.Enums.ActionType.Deleting, Definition = "Delete Role")]
 
         public async Task<IActionResult> DeleteRole([FromRoute] DeleteRoleCommandRequest deleteRoleCommandRequest)

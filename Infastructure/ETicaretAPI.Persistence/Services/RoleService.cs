@@ -22,25 +22,27 @@ namespace ETicaretAPI.Persistence.Services
         {
             IdentityResult res = await _roleManager.CreateAsync(new AppRole
             {
+                Id = Guid.NewGuid().ToString(),
                 Name = name
             });
 
             return res.Succeeded;
         }
 
-        public async Task<bool> DeleteRoleAsync(string name)
+        public async Task<bool> DeleteRoleAsync(string id)
         {
-            IdentityResult res = await _roleManager.DeleteAsync(new AppRole
-            {
-                Name = name
-            });
+            AppRole role = await _roleManager.FindByIdAsync(id);
+            IdentityResult res = await _roleManager.DeleteAsync(role);
 
             return res.Succeeded;
         }
 
-        public IDictionary<string, string> GetAllRoles()
+        public (IDictionary<string, string>,int) GetAllRoles(int page, int size)
         {
-            return _roleManager.Roles.ToDictionary(x => x.Id, x => x.Name);
+            var totalRoleCount = _roleManager.Roles.Count();
+            var roleDict = _roleManager.Roles.Skip(page*size).Take(size).ToDictionary(x => x.Id, x => x.Name);
+
+            return (roleDict, totalRoleCount);
         }
 
         public async Task<(string, string)> GetRoleById(string id)
@@ -55,11 +57,9 @@ namespace ETicaretAPI.Persistence.Services
 
         public async Task<bool> UpdateRoleAsync(string id, string name)
         {
-            IdentityResult res = await _roleManager.UpdateAsync(new AppRole
-            {
-                Id = id,
-                Name = name
-            });
+            AppRole role = await _roleManager.FindByIdAsync(id);
+            role.Name = name;
+            IdentityResult res = await _roleManager.UpdateAsync(role);
 
             return res.Succeeded;
         }

@@ -10,9 +10,9 @@ namespace ETicaretAPI.Application.Abstractions.Services.Role
     public interface IRoleService
     {
         Task<bool> CreateRoleAsync(string name);
-        Task<bool> DeleteRoleAsync(string name);
+        Task<bool> DeleteRoleAsync(string id);
         Task<bool> UpdateRoleAsync(string id, string name);
-        IDictionary<string,string> GetAllRoles();
+        (IDictionary<string,string>, int) GetAllRoles(int page, int size);
         Task<(string, string)> GetRoleById(string id);
     }
 }

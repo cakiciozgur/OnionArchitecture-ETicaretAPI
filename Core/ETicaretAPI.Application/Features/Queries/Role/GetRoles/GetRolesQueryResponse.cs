@@ -4,5 +4,6 @@
     {
 
         public IDictionary<string,string> Roles { get; set; }
+        public int TotalRoleCount { get; set; }
     }
 }
