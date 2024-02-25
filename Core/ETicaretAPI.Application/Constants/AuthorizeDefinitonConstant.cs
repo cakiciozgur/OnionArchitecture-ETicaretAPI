@@ -13,5 +13,6 @@ namespace ETicaretAPI.Application.Constants
         public const string Products = "Products";
         public const string ApplicationService = "ApplicationService";
         public const string Roles = "Roles";
+        public const string Users = "Users";
     }
 }

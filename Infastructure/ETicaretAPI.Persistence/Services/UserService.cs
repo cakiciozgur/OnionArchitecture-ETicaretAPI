@@ -5,6 +5,7 @@ using ETicaretAPI.Application.Helpers;
 using ETicaretAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace ETicaretAPI.Persistence.Services
@@ -71,6 +72,69 @@ namespace ETicaretAPI.Persistence.Services
                 else
                     throw new PasswordChangeFailedException();
             }
+        }
+        public async Task<(List<ListUser>, int totalUserCount)> GetAllUsersAsync(int page, int size)
+        {
+            var query = _userManager.Users;
+
+            IQueryable<AppUser> users = null;
+
+            if(page != -1 && size != -1)
+            {
+               users = query.Skip(page * size).Take(size);
+            }
+            else
+            {
+               users = query;
+            }
+
+            var userList = users.Select(u => new ListUser
+            {
+                Id = u.Id,
+                Email = u.Email,
+                NameSurname = u.NameSurname,
+                Username = u.UserName,
+                TwoFactorEnabled = u.TwoFactorEnabled
+            }).ToList();
+
+            return (userList, query.Count());
+        }
+
+        public async Task<bool> AssignRoleToUserAsync(string[] roles, string userId)
+        {
+            AppUser user = await _userManager.FindByIdAsync(userId);
+            if(user != null)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, userRoles);
+
+                try
+                {
+                    IdentityResult result = await _userManager.AddToRolesAsync(user, roles);
+                    return result.Succeeded;
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+
+            return false;
+        }
+
+        public async Task<List<string>> GetRolesToUser(string userId)
+        {
+            AppUser user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                return userRoles.ToList();
+                
+            }
+
+            return new List<string>();
         }
     }
 }
