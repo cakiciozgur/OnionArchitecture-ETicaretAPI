@@ -16,6 +16,7 @@ using ETicaretAPI.Application.Abstractions.Services;
 using ETicaretAPI.Application.Abstractions.Services.Order;
 using Microsoft.AspNetCore.Identity;
 using ETicaretAPI.Application.Abstractions.Services.Role;
+using ETicaretAPI.Application.Abstractions.Services.AuthorizationEndpoint;
 
 namespace ETicaretAPI.Persistence
 {
@@ -45,6 +46,12 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<ICompletedOrderReadRepository, CompletedOrderReadRepository>();
             services.AddScoped<ICompletedOrderWriteRepository, CompletedOrderWriteRepository>();
 
+            services.AddScoped<IMenuReadRepository, MenuReadRepository>();
+            services.AddScoped<IMenuWriteRepository, MenuWriteRepository>();
+
+            services.AddScoped<IEndpointReadRepository, EndpointReadRepository>();
+            services.AddScoped<IEndpointWriteRepository, EndpointWriteRepository>();
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IInternalAuth, AuthService>();
@@ -52,6 +59,7 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IAuthorizationEndpointService, AuthorizationEndpointService>();
 
             services.AddIdentity<AppUser,AppRole>(options => {
                 options.Password.RequiredLength = 3;

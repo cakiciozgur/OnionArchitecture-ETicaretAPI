@@ -39,8 +39,20 @@ namespace ETicaretAPI.Persistence.Services
 
         public (IDictionary<string, string>,int) GetAllRoles(int page, int size)
         {
-            var totalRoleCount = _roleManager.Roles.Count();
-            var roleDict = _roleManager.Roles.Skip(page*size).Take(size).ToDictionary(x => x.Id, x => x.Name);
+            var query = _roleManager.Roles;
+            IQueryable<AppRole>? rolesQuery = null;
+
+            if(page != -1 && size != -1)
+            {
+                rolesQuery = query.Skip(page * size).Take(size);
+            }
+            else
+            {
+                rolesQuery = query;
+            }
+
+            var roleDict = rolesQuery.ToDictionary(x => x.Id, x => x.Name);
+            var totalRoleCount = query.Count();
 
             return (roleDict, totalRoleCount);
         }

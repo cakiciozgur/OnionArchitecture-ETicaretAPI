@@ -24,7 +24,6 @@ namespace ETicaretAPI.API.Controllers
 
         [HttpPost]
         [AuthorizeDefinition(Menu = AuthorizeDefinitonConstant.Orders, ActionType = Application.Enums.ActionType.Writing, Definition = "Create Order")]
-
         public async Task<IActionResult> CreateOrder(CreateOrderCommandRequest createOrderCommandRequest)
         {
             CreateOrderCommandResponse response = await _mediator.Send(createOrderCommandRequest);
