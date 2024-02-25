@@ -15,6 +15,7 @@ namespace ETicaretAPI.Application.Abstractions.Services.User
         Task UpdatePasswordAsync(string userId, string resetToken, string newPassword);
         Task<(List<ListUser>, int totalUserCount)> GetAllUsersAsync(int page, int size);
         Task<bool> AssignRoleToUserAsync(string[] roles, string userId);
-        Task<List<string>> GetRolesToUser(string userId);
+        Task<List<string>> GetRolesToUser(string userIdOrName);
+        Task<bool> HasRolePermissionToPaEndpointAsync(string username, string code);
     }
 }

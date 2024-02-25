@@ -1,5 +1,6 @@
 using ETicaretAPI.API.Configurations.ColumnWriters;
 using ETicaretAPI.API.Extensions;
+using ETicaretAPI.API.Filters;
 using ETicaretAPI.Application;
 using ETicaretAPI.Application.Validators.Products;
 using ETicaretAPI.Infastructure;
@@ -27,8 +28,9 @@ builder.Services.AddPersistenceServices();
 builder.Services.AddInfastructureServices();
 builder.Services.AddStorage<LocalStorage>(); // => or builder.Services.AddStorage<AzureStorage>(); builder.Services.AddStorage(StorageType.Azure); // enum kullanmak yerine generic yapýlanma kullanma daha mantýklý
 builder.Services.AddApplicationServices();
-builder.Services.AddControllers();
+builder.Services.AddControllers(); //ilgili kullanýcý için rol yetkisi kontrolü
 builder.Services.AddFluentValidationServices();
+builder.Services.AddControllers(option => option.Filters.Add<RolePermissionFilter>()); //ilgili kullanýcý için rol yetkisi kontrolü
 builder.Services.AddSignalRServices();
 
 Logger logger = new LoggerConfiguration()

@@ -2,6 +2,8 @@
 using ETicaretAPI.Application.DTOs.User;
 using ETicaretAPI.Application.Exceptions;
 using ETicaretAPI.Application.Helpers;
+using ETicaretAPI.Application.Repositories;
+using ETicaretAPI.Domain.Entities;
 using ETicaretAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -13,9 +15,11 @@ namespace ETicaretAPI.Persistence.Services
     public class UserService : IUserService
     {
         readonly UserManager<AppUser> _userManager;
-        public UserService(UserManager<AppUser> userManager)
+        readonly IEndpointReadRepository _endpointReadRepository;
+        public UserService(UserManager<AppUser> userManager, IEndpointReadRepository endpointReadRepository)
         {
             _userManager = userManager;
+            _endpointReadRepository = endpointReadRepository;
         }
         public async Task<CreateUserResponse> CreateTaskAsync(CreateUser createUser)
         {
@@ -107,34 +111,49 @@ namespace ETicaretAPI.Persistence.Services
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
                 await _userManager.RemoveFromRolesAsync(user, userRoles);
+                
+                IdentityResult result = await _userManager.AddToRolesAsync(user, roles);
+                
+                return result.Succeeded;
 
-                try
-                {
-                    IdentityResult result = await _userManager.AddToRolesAsync(user, roles);
-                    return result.Succeeded;
-
-                }
-                catch (Exception ex)
-                {
-
-                }
             }
 
             return false;
         }
 
-        public async Task<List<string>> GetRolesToUser(string userId)
+        public async Task<List<string>> GetRolesToUser(string userIdOrName)
         {
-            AppUser user = await _userManager.FindByIdAsync(userId);
+            AppUser user = await _userManager.FindByIdAsync(userIdOrName);
+            if (user == null)
+                user = await _userManager.FindByNameAsync(userIdOrName);
+
             if (user != null)
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 return userRoles.ToList();
-                
             }
 
             return new List<string>();
+        }
+
+        public async Task<bool> HasRolePermissionToPaEndpointAsync(string username, string code)
+        {
+            var userRoles = await GetRolesToUser(username);
+
+            if (!userRoles.Any())
+                return false;
+
+            Endpoint? endpoint = await _endpointReadRepository.Table.Include(e => e.Roles).FirstOrDefaultAsync(e => e.Code == code);
+
+            if(endpoint == null)
+                return false;
+
+            var endpointRoles = endpoint.Roles.Select(e => e.Name).ToList();
+
+            var hasRole = userRoles.Exists(ur => endpointRoles.Contains(ur));
+
+            return hasRole;
         }
     }
 }
