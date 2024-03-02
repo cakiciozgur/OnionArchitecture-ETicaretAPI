@@ -45,5 +45,18 @@ namespace ETicaretAPI.Persistence.Services
 
             return _qrCodeService.GenerateQRCode(plaintText);
         }
+
+        public async Task<bool> UpdateStockQRCodeToProductAsync(string productId, int stock)
+        {
+            Product product = await _productReadRepository.GetByIdAsync(productId);
+            if (product == null)
+            {
+                throw new ProductNotFoundException();
+            }
+
+            product.Stock = stock;
+
+            return (await _productWriteRepository.SaveAsync()) > 0;
+        }
     }
 }

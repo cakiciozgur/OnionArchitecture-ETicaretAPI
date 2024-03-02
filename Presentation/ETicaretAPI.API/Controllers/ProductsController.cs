@@ -24,6 +24,7 @@ using System.Net;
 using ETicaretAPI.Application.Constants;
 using ETicaretAPI.Application.CustomAttributes;
 using ETicaretAPI.Application.Abstractions.Services.Product;
+using ETicaretAPI.Application.Features.Commands.Product.UpdateStockQRCodeProduct;
 
 namespace ETicaretAPI.API.Controllers
 {
@@ -59,6 +60,13 @@ namespace ETicaretAPI.API.Controllers
         {
             byte[] data = await _productService.QrCodeToProductAsync(productId);
             return File(data, "image/png");
+        }
+
+        [HttpPut("qrcode")]
+        public async Task<IActionResult> UpdateStockQrCodeToProduct([FromBody] UpdateStockQRCodeProductCommandRequest updateStockQRCodeProductCommandRequest)
+        {
+            UpdateStockQRCodeProductCommandResponse response = await _mediator.Send(updateStockQRCodeProductCommandRequest);
+            return Ok(response);
         }
 
         [HttpPost]
